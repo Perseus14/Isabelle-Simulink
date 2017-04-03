@@ -1,0 +1,223 @@
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice. 
+
+\documentclass{beamer}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\graphicspath{ {Images/} }
+\usepackage{graphicx}
+
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows}
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
+\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
+\tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=orange!30]
+\tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=green!30]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\tikzstyle{Memory} = [cylinder,shape border rotate=90,draw,minimum height=2.5cm,minimum width=2cm]
+
+% There are many different themes available for Beamer. A comprehensive
+% list with examples is given here:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+% You can uncomment the themes below if you would like to use a different
+% one:
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+%\usetheme{boxes}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{default}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+\usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+%\usetheme{Warsaw}
+
+%\title{AI- Project}
+
+% A subtitle is optional and this may be deleted
+\title{Formalising Euler Method in Isabelle}
+
+\author{Rishabh Manoj}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute{International Institute of Information Technology - Bangalore}
+
+\date{\today}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Theorem Proving}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+\AtBeginSubsection[]
+{
+  \begin{frame}<beamer>{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
+
+% Let's get started
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+
+% Section and subsections will appear in the presentation overview
+% and table of contents.
+
+\section{Formal Analysis of ODE}
+
+\begin{frame}{Formal Analysis of ODE}{}
+\begin{itemize}
+    \item The paper \textit{Numerical Analysis of Ordinary Differential
+Equations in Isabelle/HOL} aims to formalise initial value problems (IVPs) of ODEs and prove the Picard-Lindel\"of theorem.\\ 
+    \item They use a generic one-step methods for numerical approximation of the solution and give an executable specification of the Euler method as an instance
+of one-step methods.  
+\end{itemize}
+
+\end{frame}
+
+
+\section{Picard-Lindel\"of theorem}
+
+\begin{frame}{Picard-Lindel\"of theorem}{}
+
+  Given an ODE of the form 
+   $$ \frac{du}{dt} = f(t,u(t)), \ \ u(t_0) = x_0$$
+
+ if $f$ is \textit{Lipschitz} continuous in $u$ and continuous in $t$ then $\frac{du}{dt}$ has a unique solution.
+ 
+ A fn. is called \textit{Lipschitz} if it's derivative is bounded. Intutively, the fn. is limited in how fast it can change. 
+\end{frame}
+
+\begin{frame}{Proof}{}
+
+  Integrating the ODE gives 
+   $$ u(t) - u(t_0)= \int_{t_0}^{t} f(s,u(s)) ds$$
+   
+   Set
+      $$\phi_0(t) = y_0$$
+    and
+    $$\phi_{k+1}(t) = y_0 + \int_{t_0}^{t} f(s,\phi_{k}(s)) ds$$    
+
+ Using Banach fixed point theorem, it can be shown that the sequence $\phi_k$ is \emph{convergent} and the limit is the solution. \cite{Wiki}
+\end{frame}
+
+
+\section{One Step Method}
+
+\begin{frame}{One-step Method}{}
+One-step method approximates a function (the solution)
+in discrete steps, each step operating exclusively on the results of one previous
+step. For one-step methods in general, one can give assumptions under which
+the method works correctly \cite{ODE}
+\begin{itemize}
+      \item \textbf{Consistency}:- If the error in one step
+goes to zero with the step size, the one-step method is called consistent\\
+    \item \textbf{Convergence}:- The global error, the error after a series of steps, goes to zero with the step size\\
+    \item \textbf{Stability}:- For efficiency reasons, we want to limit the precision of our calculations which causes rounding errors.The error between the
+ideal and the perturbed function goes to zero with the step size.\\
+  \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{One-step Method}
+\begin{itemize}
+\item It can be proved that a consistent one-step methods are convergent and stable.For detailed proof refer \cite{ODE}
+\item We show that Euler method is consistent and can therefore be used to approximate IVPs.
+\item We show that the Euler method is convergent which proves the Picard-Lindel\"of theorem
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{One-step Method}{Consistency}
+  \begin{center}
+            \begin{equation*}
+            \begin{aligned}
+                u'(t) &= f(t,u(t))    \\
+                gf_j &\approx u(t_j) \\
+                gf_{j+1} &= L(gf_j,h,t_j) \\
+                L(gf_j,h,t_j) &= gf_j + h*f(t_j,gf_j) \ \ (h = t_{j+1} - t_j)\\ 
+                \text{Local Error} &= ||u(t_{j+1}) - L(gf_j,h,t_j)||
+            \end{aligned}
+            \end{equation*}
+            \end{center}
+        
+        A one-step method is considered consistent with $u$ of order $p$ if the local error is in  $\mathcal{O}(h^{p+1})$ (i.e)   $\rightarrow \raisebox{.5pt}
+{\textcircled{\raisebox{-.95pt} {1}}}$ \cite{Wolf}
+        $$||u(t_{j+1}) - L(gf_j,h,t_j)|| \leq B.h^{p+1}$$ 
+            \hfill where $B$ is a constant 
+  
+  
+\end{frame}
+
+\begin{frame}{Euler Method}{Consistency}
+  
+  Using the Taylor series expansion
+ 
+ $$f(x) = f(a) + (x-a)*f'(a) + \frac{(x-a)^2}{2}*f''(a) + \cdots$$
+ 
+ $$\implies f(x) - (f(a) + (x-a)*f'(a)) = \mathcal{O}(h^2)$$
+
+Euler Method:                              
+    $$u(t+h) = u(t) + h*(u'(t))$$                                        
+   $\implies$ The Local Error of Euler Method is in $\mathcal{O}(h^2)$.\\
+   
+   From $\raisebox{.5pt}
+{\textcircled{\raisebox{-.95pt} {1}}}$ we say that,\\ \hfill Euler Method is consistent and therefore convergent and stable                         
+\end{frame}
+
+\begin{frame}{References}
+\bibliographystyle{plain}
+\bibliography{citations}
+\end{frame}
+
+\end{document}
+
+
+
